@@ -62,7 +62,7 @@ module scan_wrapper_USER_MODULE_ID (
     wire [NUM_IOS-1:0] module_data_out; // the data from the user module
 
     // scan chain - link all the flops, with data coming from data_in
-    assign scan_data_in = {scan_data_out[NUM_IOS-2:0], data_in};
+    assign scan_data_in = {scan_data_out[NUM_IOS-3:0], data_in, 0};
 
     // end of the chain is a negedge FF to increase hold margin between blocks
     sky130_fd_sc_hd__dfrtn_1 out_flop (
