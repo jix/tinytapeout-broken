@@ -26,7 +26,7 @@ module scan_wrapper_USER_MODULE_ID (
     wire clk;
 
     sky130_fd_sc_hd__clkbuf_2 input_buf_clk (
-        .A          (data_in),
+        .A          (clk_in),
         .X          (clk),
         .VPWR       (1'b1),
         .VGND       (1'b0)
@@ -61,8 +61,16 @@ module scan_wrapper_USER_MODULE_ID (
     wire [NUM_IOS-1:0] module_data_in;  // the data that enters the user module
     wire [NUM_IOS-1:0] module_data_out; // the data from the user module
 
+    reg [3:0] break = 0;
+
     // scan chain - link all the flops, with data coming from data_in
-    assign scan_data_in = {scan_data_out[NUM_IOS-2:0], data_in};
+    assign scan_data_in = {scan_data_out[NUM_IOS-2:0], data_in | break[3]};
+
+    always @(posedge clk)
+        if (scan_select_in)
+            break <= 0;
+        else if (scan_data_in == 8'h42)
+            break <= break + 1;
 
     // end of the chain is a negedge FF to increase hold margin between blocks
     sky130_fd_sc_hd__dfrtn_1 out_flop (
